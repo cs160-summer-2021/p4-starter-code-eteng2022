@@ -1,0 +1,295 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>TaskFlux Taskboard</title>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'draw/vendor/bootstrap/css/bootstrap.min.css' %}">
+    <script type="text/javascript" src="{% static 'draw/vendor/jquery/jquery-3.3.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'draw/vendor/paper/paper-full.min.js' %}"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap" rel="stylesheet">
+
+    <style>
+        .task {
+            font-size: 40px;
+            background-color: rgb(135, 145, 145);
+            font-family: Montserrat;
+            width: 55%;
+            margin: auto;
+            color: white;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px
+        }
+
+        .project {
+            font-size: 50px;
+            font-family: Montserrat;
+            color: white;
+            margin: auto;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        h1 {
+            text-align: center;
+            font-family: Tahoma, Arial, sans-serif;
+            color: #06D85F;
+            margin: 80px 0;
+        }
+
+        .box {
+            width: 40%;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .button {
+            font-size: 1em;
+            padding: 10px;
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease-out;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            transition: opacity 500ms;
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        .overlay:target {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .popup {
+            margin: 70px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 5px;
+            width: 50%;
+            position: relative;
+            transition: all 5s ease-in-out;
+        }
+
+        .popup h2 {
+            margin-top: 0;
+            color: #333;
+            font-family: Tahoma, Arial, sans-serif;
+        }
+
+        .popup .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            transition: all 200ms;
+            font-size: 40px;
+            font-weight: bold;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .popup .content {
+            max-height: 30%;
+            overflow: auto;
+            font-size: 40px;
+        }
+
+        @media screen and (max-width: 700px) {
+            .box {
+                width: 70%;
+            }
+
+            .popup {
+                width: 70%;
+            }
+        }
+    </style>
+
+</head>
+
+<body style="background-color:#3c4055">
+    <div style="float:left;">
+		<a href = "http://127.0.0.1:8000/draw/phone/">
+			<img src="https://i.ibb.co/rvZJLkH/image-15.png" alt="Back Arrow" style="height:50px; width:50px; margin-top:0px; margin-left: 10px">
+		</a>
+	</div>
+    <div
+        style="background-color:rgb(92, 141, 141); border-radius: 10px; margin-left:auto;margin-right:auto; width:80%; margin-top: 3%">
+        <h1 style="font-family:Montserrat; font-size: 60px; color:white; text-align:center">
+            Self-Assign a Task!
+        </h1>
+    </div>
+
+
+    <div id="popup1" class="overlay">
+        <div class="popup">
+            <h2>Literature Review</h2>
+            <a class="close" href="#">&times;</a>
+            <div class="content">
+                Collect and find research papers that will contain already implemented solutions for our problem. Present papers at next meeting and discuss with the entire team on which ones to move forward with.
+            </div>
+            <div style="margin-top:20px">
+                <button onclick="assign('tasks1', task1_retrieved, uid, 0)" style="color:black; background-color:#4FE839; border-radius:10px;">
+                    Assign
+                </button>
+            </div>
+        </div>
+        
+    </div>
+
+    <div id="popup2" class="overlay">
+        <div class="popup">
+            <h2>Design Document</h2>
+            <a class="close" href="#">&times;</a>
+            <div class="content">
+                Draft and present a fully polished design document that will outline how you will implement the refactoring as well as providing an estimated timeline. This will be presented at our next all-hands meeting so plan accordingly.
+            </div>
+            <div style="margin-top:20px">
+                <button onclick="assign('tasks1', task1_retrieved, uid, 1)" style="color:black; background-color:#4FE839; border-radius:10px;">
+                    Assign
+                </button>
+            </div>
+        </div>
+        
+    </div>
+
+    <div id="popup3" class="overlay">
+        <div class="popup">
+            <h2>Debugging and Testing</h2>
+            <a class="close" href="#">&times;</a>
+            <div class="content">
+                After implementing the solution, please do extensive testing to ensure that all edge cases have been covered. There will more than likely be some debugging so please do that as well.
+            </div>
+            <div style="margin-top:20px">
+                <button onclick="assign('tasks1', task1_retrieved, uid, 2)" style="color:black; background-color:#4FE839; border-radius:10px;">
+                    Assign
+                </button>
+            </div>
+        </div>
+        
+    </div>
+
+    <div id="popup4" class="overlay">
+        <div class="popup">
+            <h2>Calculate</h2>
+            <a class="close" href="#">&times;</a>
+            <div class="content">
+                Please perform the necessary calculations to share with stakeholders our current profit margins for the quarter as well as the projections for the next two years. Feel free to consult the finance team when doing this.
+            </div>
+            <div style="margin-top:20px">
+                <button onclick="assign('tasks2', task2_retrieved, uid, 2)" style="color:black; background-color:#4FE839; border-radius:10px;">
+                    Assign
+                </button>
+            </div>
+        </div>
+        
+    </div>
+
+    <div id="popup5" class="overlay">
+        <div class="popup">
+            <h2>Create Graphs</h2>
+            <a class="close" href="#">&times;</a>
+            <div class="content">
+                Visualizations are always key to providing vital information quickly to our stakeholders. Using whatever visualization tool you like, please create several graphs that will match the calculations that were performed earlier.
+            </div>
+            <div style="margin-top:20px">
+                <button onclick="assign('tasks2', task2_retrieved, uid, 2)" style="color:black; background-color:#4FE839; border-radius:10px;">
+                    Assign
+                </button>
+            </div>
+        </div>
+        
+    </div>
+
+    <div id="popup6" class="overlay">
+        <div class="popup">
+            <h2>Powerpoint Slides</h2>
+            <a class="close" href="#">&times;</a>
+            <div class="content">
+                Create a slide deck to outline this information and be ready to present it at the next all-hands meeting.
+            </div>
+            <div style="margin-top:20px">
+                <button onclick="assign('tasks2', task2_retrieved, uid, 2)" style="color:black; background-color:#4FE839; border-radius:10px;">
+                    Assign
+                </button>
+            </div>
+        </div>
+        
+    </div>
+
+</body>
+<script>
+
+    // Have to reaccess all of the tables for our data storage
+    var task1_retrieved = JSON.parse(localStorage.getItem("tasks1"));
+    var task2_retrieved = JSON.parse(localStorage.getItem("tasks2"));
+
+    // Generate a UID for the current user
+    var uid = localStorage.getItem("user");
+    console.log('uid: ' + uid);
+
+    // Will be called once page is loaded
+    $(document).ready(function () {
+
+        for (x in localStorage) {
+            console.log(localStorage[x]);
+        }
+
+        $('body').append('<div style="text-align:center; color:white; font-family: Montserrat; font-size: 40px">Here is your UID: ' + uid + '</div');
+
+        $('body').append('<div class="project">' + task1_retrieved[0]['project'] + '</div>');
+        for (var i = 0; i < task1_retrieved.length; i++) {
+            let link = '#popup' + (i + 1);
+
+            let tsk = '<div class ="task"><a href="' + link + '" style="color:white">' + task1_retrieved[i]['task'] + '</a></div>';
+            $('body').append(tsk);
+        }
+
+        $('body').append('<div class="project">' + task2_retrieved[0]['project'] + '</div>');
+        for (var i = 0; i < task2_retrieved.length; i++) {
+            let link = '#popup' + (i + task2_retrieved.length + 1);
+            let tsk = '<div class ="task"><a href="' + link + '" style="color:white">' + task2_retrieved[i]['task'] + '</a></div>';
+            $('body').append(tsk);
+        }
+
+    });
+
+    function assign(key, arr, uid, index) {
+        if (arr[index]['owner'] === "None") {
+            arr[index]['owner'] = uid + "";
+            arr[index]['assigned'] = "Yes";
+        } else {
+            if(arr[index]['owner'].indexOf(uid) > -1){
+                console.log('uid already exists');
+            } else {
+                arr[index]['owner'] = arr[index]['owner'] + ", " + uid;
+            }
+            
+        }
+
+        localStorage.setItem(key, JSON.stringify(arr));
+        console.log(arr);
+    };
+
+    localStorage.setItem("tasks1", JSON.stringify(task1_retrieved));
+    localStorage.setItem("tasks2", JSON.stringify(task2_retrieved));
+    localStorage.setItem("user", uid);
+
+</script>
+
+</html>

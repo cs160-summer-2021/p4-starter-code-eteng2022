@@ -1,0 +1,115 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>TaskFlux Taskboard</title>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'draw/vendor/bootstrap/css/bootstrap.min.css' %}">
+    <script type="text/javascript" src="{% static 'draw/vendor/jquery/jquery-3.3.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'draw/vendor/paper/paper-full.min.js' %}"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap" rel="stylesheet">
+
+    <style type="text/css">
+    </style>
+
+</head>
+
+<body style="background-color:rgb(96, 99, 112)">
+    <div
+        style="background-color:rgb(92, 141, 141); border-radius: 10px; margin-left:auto;margin-right:auto; width:80%; margin-top: 3%">
+        <h1 style="font-family:Montserrat; font-size: px; color:white; text-align:center">
+            TaskFlux Taskboard
+        </h1>
+    </div>
+    <table style="background-color:white; border-collapse: collapse; border: 1px solid black; margin:auto; width: 80%;">
+
+    </table>
+
+
+</body>
+<script>
+
+    // var socket = new WebSocket('ws://' + window.location.host + '/ws/task');
+
+    // var currentTasks = [
+    //     ['Project 1', 'Task 1: Literature Review', 'Assigned', '']
+    // ]
+
+    var tasks1 = [
+        { project: "Project 1: API Refactoring", number: 1, task: "Literature Review", assigned: "No", owner: "None", progress: 50, description: "Collect and find research papers that will contain already implemented solutions for our problem. Present papers at next meeting and discuss with the entire team on which ones to move forward with." },
+        { project: "Project 1: API Refactoring", number: 2, task: "Design Document", assigned: "No", owner: "None", progress: 0, description: "Draft and present a fully polished design document that will outline how you will implement the refactoring as well as providing an estimated timeline. This will be presented at our next all-hands meeting so plan accordingly." },
+        { project: "Project 1: API Refactoring", number: 3, task: "Testing and Debugging", assigned: "No", owner: "None", progress: 10, description: "After implementing the solution, please do extensive testing to ensure that all edge cases have been covered. There will more than likely be some debugging so please do that as well." }
+    ]
+
+    var tasks2 = [
+        { project: "Project 2: Financial Projections", number: 1, task: "Calculate", assigned: "No", owner: "None", progress: 0, description: "Please perform the necessary calculations to share with stakeholders our current profit margins for the quarter as well as the projections for the next two years. Feel free to consult the finance team when doing this." },
+        { project: "Project 2: Financial Projections", number: 2, task: "Create Graphs", assigned: "No", owner: "None", progress: 0, description: "Visualizations are always key to providing vital information quickly to our stakeholders. Using whatever visualization tool you like, please create several graphs that will match the calculations that were performed earlier." },
+        { project: "Project 2: Financial Projections", number: 3, task: "Powerpoint Slides", assigned: "No", owner: "None", progress: 10, description: "Create a slide deck to outline this information and be ready to present it at the next all-hands meeting." }
+    ]
+
+    if (localStorage.getItem("tasks1") === null) {
+        localStorage.setItem("tasks1", JSON.stringify(tasks1));
+    } else {
+        tasks1 = JSON.parse(localStorage.getItem("tasks1"));
+    }
+    if (localStorage.getItem("tasks2") === null) {
+        localStorage.setItem("tasks2", JSON.stringify(tasks2));
+    } else {
+        tasks2 = JSON.parse(localStorage.getItem("tasks2"));
+    }
+
+
+    for (var i = 0; i < localStorage.length; i++) {
+        // do something with localStorage.getItem(localStorage.key(i));
+        console.log(localStorage.key(i));
+        console.log(localStorage.length);
+    }
+
+    function generateTableHead(table, data) {
+        let thead = table.createTHead();
+        let row = thead.insertRow();
+        for (let key of data) {
+            if (key != 'description' && key != 'number') {
+                let th = document.createElement("th");
+                let text = document.createTextNode(key);
+                th.appendChild(text);
+                row.appendChild(th);
+            }
+
+        }
+    }
+
+    function generateTable(table, data) {
+        for (let element of data) {
+            let row = table.insertRow();
+            for (key in element) {
+                if (key != 'description' && key != 'number') {
+                    let cell = row.insertCell();
+                    let text = document.createTextNode(element[key]);
+                    cell.appendChild(text);
+                }
+
+            }
+        }
+    }
+
+    let table = document.querySelector("table");
+
+    let data = Object.keys(tasks1[0]);
+    generateTable(table, tasks1);
+
+    let data1 = Object.keys(tasks2[0]);
+    generateTable(table, tasks2);
+    generateTableHead(table, data);
+
+    //generateTableHead(table1, data1);
+
+</script>
+
+</html>

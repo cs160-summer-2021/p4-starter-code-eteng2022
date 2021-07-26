@@ -1,0 +1,105 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>P4 Drawing</title>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'draw/vendor/bootstrap/css/bootstrap.min.css' %}">
+    <script type="text/javascript" src="{% static 'draw/vendor/jquery/jquery-3.3.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'draw/vendor/paper/paper-full.min.js' %}"></script>
+
+    <style type="text/css">
+    </style>
+
+</head>
+<body>
+    <!-- You may change the dimensions of this canvas -->
+    <canvas id="myCanvas" width="750px" height="750px"></canvas>
+</body>
+<script>
+
+    // setting up the canvas and one paper tool
+    var canvas = document.getElementById('myCanvas');
+    paper.setup(canvas);
+    var tool = new paper.Tool();
+    var path = new paper.Path();
+    var uid = Date.now() % 10000;
+    path.strokeColor = "red";
+    var lastUID = undefined;
+
+    // found from https://css-tricks.com/snippets/javascript/random-hex-color/
+    var randomColor = Math.floor(Math.random()*16777215).toString(16);
+
+    // getting the URL (you may want to use for Exercise 3)
+    var url = window.location.href;
+
+    // parsed to get window size (according to project spec)
+    var windowSize = url.split("?")[1].split("=")[1];
+
+    var socket = new WebSocket(
+        'ws://' + window.location.host + '/ws/draw');
+
+    tool.onMouseMove = function(event) { //http://paperjs.org/reference/tool/ path examples
+        // You may need to add code here if you want to pass any other information.
+        let tempColor = "#" + randomColor;
+
+        // check if this is individual drawing or larger display
+        if(windowSize == "small"){
+            if(lastUID != uid){
+                // needs new path if we have a new user
+                path = new paper.Path();
+                path.strokeColor = "#" + randomColor;
+                path.add(event.point);
+            } else {
+                path.strokeColor = "#" + randomColor;
+                path.add(event.point);
+            }
+            lastUID = uid;
+
+            // storing through JSON formatting. found from: https://www.w3schools.com/js/js_json.asp
+            var info = {
+                x: event.point.x,
+                y: event.point.y,
+                color: randomColor,
+                uid: uid
+            };
+
+            // send info to console so we can use the past point, color, uid
+            socket.send(JSON.stringify(info));
+        }
+       
+    }
+
+    socket.onmessage = function(receivedMessage) {
+        var received = JSON.parse(receivedMessage.data);
+        console.log("Received: " + JSON.stringify(received));
+        // You will probably want to add some code here to draw more lines.
+        
+        // only have to sync drawing if it is the larger display
+        if(windowSize == "large"){
+
+            // if new user then create new path and new point from last known spot (received message)
+            if(received.uid != lastUID){
+                path = new paper.Path();
+                let pt = new paper.Point(received.x, received.y);
+
+                // same color from before
+                path.strokeColor = "#" + received.color;
+                path.add(pt);
+                lastUID = received.uid;
+            } else {
+                let pt = new paper.Point(received.x, received.y);
+                path.strokeColor = "#" + received.color;
+                path.add(pt);
+            }
+        }
+    }
+
+    socket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+</script>
+</html>
